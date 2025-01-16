@@ -5,6 +5,7 @@ import json
 
 
 def download(input):
+    print("Downloading videos for {} posts".format(len(input)))
     APIFY_API_TOKEN = os.getenv("APIFY_API_TOKEN")
     client = ApifyClient(APIFY_API_TOKEN)
 
@@ -14,11 +15,12 @@ def download(input):
         "proxy": { "useApifyProxy": True },
     }
 
-    # Run the Actor and wait for it to finish
+    print("Running actor")
     run = client.actor("OWBUCWZK5MEeO5XiC").call(run_input=run_input)
     result = client.dataset(run["defaultDatasetId"])
     result_list = result.list_items().items
     today_date = datetime.today().strftime('%Y-%m-%d')
+
     target_directory = f"result/{today_date}"
     if not os.path.exists(target_directory):
         os.makedirs(target_directory)
@@ -32,7 +34,7 @@ def download(input):
     result_mapped = [
         {
             "IGUrl": item["sourceUrl"],
-            "caption": url_caption_mapping[item["sourceUrl"]],
+            "iNatURL": url_caption_mapping[item["sourceUrl"]],
             "downloadUrl": item["downloadUrl"],
         }
         for item in result_list
